@@ -3,7 +3,7 @@
 let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
-let projectShema = Schema({
+let ProjectSchema = Schema({
     name: String,
     description: String,
     category: String,
@@ -14,4 +14,4 @@ let projectShema = Schema({
 
 
 //mongoogse lo que hace con project, segun la coleccion creada es pluralizarla y ponerla en minuscula
-module.exports = mongoose.model('Project', projectShema);
+module.exports = mongoose.model('Project', ProjectSchema);
