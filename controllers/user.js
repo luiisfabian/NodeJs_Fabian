@@ -39,54 +39,57 @@ let controllers = {
         // user.password = params.password;
         user.phone = params.phone;
         user.isDeleted = false;
-        bcrypt.hash(params.password, 12).then(hash => {
-            console.log(hash);
-            params.password = hash;
-        }).then(()=>{
-            res.send();
-        }).catch((err)=>{
-            console.log(err);
-            next();
-        });
+        const password = "mypass123"
 
-        user.password =  params.password
-        user.save((err, userStored) => {
-            console.log(userStored);
-            if (err) return res.status(500).send({ message: "no se puede guardar" });
-            if (!userStored) return res.status(404).send({ message: "no se puede guardar Usuario / Documento" });
-            return res.status(200).send({ user: userStored });
+        bcrypt.genSalt(10, function (saltError, salt) {
+            if (saltError) {
+                throw saltError
+            } else {
+             bcrypt.hash(params.password, salt,  function (hashError, hash) {
+                    if (hashError) {
+                        throw hashError;
+                    } else {
+                        console.log(hash);
+                        params.password = hash;
+                        user.password = params.password;
+                        console.log("gonorreaaaa", user.password);
+                        user.save((err, userStored) => {
+                            console.log(userStored);
+                            if (err) return res.status(500).send({ message: "no se puede guardar" });
+                            if (!userStored) return res.status(404).send({ message: "no se puede guardar Usuario / Documento" });
+                            return res.status(200).send({ user: userStored });
+                        })
+                        //$2a$10$FEBywZh8u9M0Cec/0mWep.1kXrwKeiWDba6tdKvDfEBjyePJnDT7K
+                    }
+                })
+            }
         })
+
     },
 
     updateUser: function (req, res) {
 
         let userId = req.params.id;
         let update = req.body;
-
-        user.findByIdAndUpdate(userId, update, {new : true}, (err, userUpdate)=>{
-            if(err) return res.status(500).send({message: "error al actualizar"});
-            if(!userUpdate) return res.status(404).send({message: "error al actualizar el usuario/documento"});
+        user.findByIdAndUpdate(userId, update, { new: true }, (err, userUpdate) => {
+            if (err) return res.status(500).send({ message: "error al actualizar" });
+            if (!userUpdate) return res.status(404).send({ message: "error al actualizar el usuario/documento" });
             return res.status(200).send({
                 user: userUpdate
             });
-
         })
-
     },
     deleteUser: function (req, res) {
         let userId = req.params.id;
 
-        user.findByIdAndUpdate(userId, {isDeleted: true}, {new: true}, (err, userDeleted)=>{
-            if(err) return res.status(500).send({message: "error al Eliminar"});
-            if(!userDeleted) return res.status(404).send({message: "error al eliminar usuario"});
+        user.findByIdAndUpdate(userId, { isDeleted: true }, { new: true }, (err, userDeleted) => {
+            if (err) return res.status(500).send({ message: "error al Eliminar" });
+            if (!userDeleted) return res.status(404).send({ message: "error al eliminar usuario" });
 
             return res.status(200).send({
                 user: userDeleted
             })
         })
-
-
-
     }
 
 }
